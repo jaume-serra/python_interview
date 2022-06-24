@@ -2,6 +2,7 @@
 from pydantic import BaseModel
 
 
-class Joke(BaseModel):
-    title: str
-    value: str 
+class JokeSchema(BaseModel):
+    number: int | None = None
+    text: str
+  
