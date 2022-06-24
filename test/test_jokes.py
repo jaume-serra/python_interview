@@ -19,11 +19,11 @@ def test_get_joke_dad():
     response = client.get("/jokes/Dad")
     assert response.status_code == 200
 
-
 def test_get_joke_bad():
     response = client.get("/jokes/Bob")
     assert response.status_code == 400
     assert response.json() == {'detail': 'Invalid Parameter'}
+
 
 
 def test_post_joke():
@@ -36,20 +36,33 @@ def test_post_joke_bad():
     response = client.post("/jokes/", json={'text': ''})
     assert response.status_code == 400
     assert response.json() == {'detail': "Invalid Parameter. Joke can't be empty"}
+
+
+def test_post_joke_repeated():
+    client.post("/jokes/", json={'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
+    response = client.post("/jokes/", json={'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
+    assert response.status_code == 400
+    assert response.json() == {'detail': "Invalid Parameter. Joke repeated"}
     
-# joke repeated
+    
     
 def test_update_joke():
     response = client.update("/jokes/", json={'number': 1, 'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
     assert response.status_code == 200
     assert response.json() == {'detail': "Joke updated"}
 
+
 def test_update_joke_empty():
     response = client.update("/jokes/", json={'number': 1, 'text': ''})
     assert response.status_code == 400
     assert response.json() == {'detail': "Invalid text or number"}
 
-# joke repeated
+
+def test_update_joke_repeated():
+    client.update("/jokes/", json={'number': 1, 'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
+    response = client.update("/jokes/", json={'number': 1, 'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
+    assert response.status_code == 400
+    assert response.json() == {'detail': "Invalid Parameter. Joke repeated"}
 
  
 def test_update_joke_bad():
@@ -58,18 +71,23 @@ def test_update_joke_bad():
     assert response.json() == {'detail': "Invalid Number"}
 
 
+
 def test_delete_joke():
     response = client.delete("/jokes/", json={'number': 1})
     assert response.status_code == 200
     assert response.json() == {'detail': "Joke deleted"}
         
+        
 def test_delete_joke_bad():
     response = client.delete("/jokes/", json={'number': 999})
     assert response.status_code == 400
     assert response.json() == {'detail': "Invalid number"}
+    
         
-# numero invalid -> ''
-
+def test_delete_joke_bad():
+    response = client.delete("/jokes/", json={'number': ''})
+    assert response.status_code == 400
+    assert response.json() == {'detail': "Invalid number"}    
 
     
     
