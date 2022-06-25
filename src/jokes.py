@@ -9,7 +9,6 @@ import db.crud as crud
 
 jokesapp = APIRouter()
 
-
 @jokesapp.get("/")
 async def get_joke():
  
@@ -29,7 +28,6 @@ async def get_joke(value):
         return {"detail": dadJoke['joke']}
 
     raise HTTPException(status_code=400, detail="Invalid Parameter")
-    
 
 
 @jokesapp.post("/")
@@ -38,11 +36,11 @@ async def post_joke(joke : JokeSchema, db: Session = Depends(get_db)):
     if(not joke.text):
         raise HTTPException(status_code=400, detail="Invalid Parameter. Joke can't be empty")
            
-    if(crud.check_existing(joke)):
+    if(crud.check_existing(db,joke)):
         raise HTTPException(status_code=400, detail="Invalid Parameter. Joke repeated")
         
-    crud.create_joke(db, joke) 
-    return {'detail': 'Joke created' }
+    id = crud.create_joke(db, joke) 
+    return {'detail': 'Joke created', 'id': id }
         
         
     
@@ -56,21 +54,32 @@ async def update_joke(joke: JokeSchema, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Invalid text or number")
     if not crud.check_id(db,joke.number):
         raise HTTPException(status_code=400, detail="Invalid number")
-    if crud.check_existing(db, joke):
-        raise HTTPException(status_code=400, detail="Invalid Parameter. Joke repeated")
+
     crud.put_joke(db, joke)
     return {'detail': "Joke updated"}
 
     
-    
+@jokesapp.delete("/all")
+async def delete_db_test(db: Session = Depends(get_db)):
+    crud.deleteDb(db)
+    return {'detail': 'Test db deleted'}
     
 @jokesapp.delete("/{deleteId}")
-async def delete_joke(deleteId: int, db: Session = Depends(get_db)):
+async def delete_joke(deleteId, db: Session = Depends(get_db)):
   
     if not deleteId:
+        print("adeu1")
+        
         raise HTTPException(status_code=400, detail="Invalid number")
     if (not crud.check_id(db,deleteId)):
+        print("adeu2")
         raise HTTPException(status_code=400, detail="Invalid number")
+    print("hola1")
     crud.delete_joke(db, deleteId)
+    print("hola2")
+    
     return {'detail': "Joke deleted"}
+    
+    
+    
     
