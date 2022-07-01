@@ -2,7 +2,6 @@ import requests
 
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from db.models import Joke
 from db.schemas import JokeSchema
 from db.database import get_db
 import db.crud as crud
@@ -24,7 +23,6 @@ async def get_joke(value):
     
     if(value) == "dad":
         dadJoke = requests.get("https://icanhazdadjoke.com", headers = {'Accept': 'application/json'}).json()
-        print(dadJoke['joke'])
         return {"detail": dadJoke['joke']}
 
     raise HTTPException(status_code=400, detail="Invalid Parameter")
@@ -66,17 +64,12 @@ async def delete_db_test(db: Session = Depends(get_db)):
     
 @jokesapp.delete("/{deleteId}")
 async def delete_joke(deleteId, db: Session = Depends(get_db)):
-  
     if not deleteId:
-        print("adeu1")
-        
         raise HTTPException(status_code=400, detail="Invalid number")
+    
     if (not crud.check_id(db,deleteId)):
-        print("adeu2")
         raise HTTPException(status_code=400, detail="Invalid number")
-    print("hola1")
     crud.delete_joke(db, deleteId)
-    print("hola2")
     
     return {'detail': "Joke deleted"}
     

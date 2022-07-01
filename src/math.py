@@ -1,11 +1,7 @@
 from math import gcd
-import re
 from fastapi import APIRouter,HTTPException
-from pydantic import BaseModel
 
 mathapp = APIRouter()
-
-#Todo: mirar que funcioni
 
     
 @mathapp.get("/mcm/{numbers}")

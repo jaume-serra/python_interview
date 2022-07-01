@@ -77,7 +77,6 @@ def test_delete_joke():
     client.delete("/jokes/all", json={})
     res = client.post("/jokes/", json={'text': 'Never look a gift Chuck Norris in the mouth, because he will bite your damn nose off.'})
     id = res.json()['id']['id']
-    print(id)
     response = client.delete("/jokes/"+str(id))
     assert response.status_code == 200
     assert response.json() == {'detail': "Joke deleted"}
